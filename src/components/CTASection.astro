@@ -5,7 +5,8 @@
 <section class="cta-section">
   <div class="cta-box">
     <p class="cta-text">
-      <span class="strike-text">Strike!</span> Join the waitlist for the future of league management
+      <span class="strike-text">Strike!</span> Join the waitlist for the future of
+      league management
     </p>
     <form class="notify-form" id="notifyForm">
       <input
@@ -15,7 +16,9 @@
         required
         class="email-input"
       />
-      <button type="submit" class="submit-button" id="submitButton"> Reserve Your Spot </button>
+      <button type="submit" class="submit-button" id="submitButton">
+        Reserve Your Spot
+      </button>
     </form>
     <p class="privacy-note" id="formMessage">
       We'll notify you when lanes open. No spam, guaranteed.
@@ -70,15 +73,20 @@
 
         if (response.ok) {
           form.style.display = 'none';
-          formMessage.textContent = "You're on the list! We'll notify you when we launch. 🎳";
+          formMessage.textContent =
+            "You're on the list! We'll notify you when we launch. 🎳";
           formMessage.style.color = '#d4a574';
           formMessage.style.fontSize = '1rem';
         } else {
-          throw new Error(serverMessage || 'Something went wrong. Please try again.');
+          throw new Error(
+            serverMessage || 'Something went wrong. Please try again.',
+          );
         }
       } catch (error) {
         formMessage.textContent =
-          error instanceof Error ? error.message : 'Something went wrong. Please try again.';
+          error instanceof Error
+            ? error.message
+            : 'Something went wrong. Please try again.';
         formMessage.style.color = '#ea580c';
         submitButton.disabled = false;
         submitButton.textContent = 'Reserve Your Spot';

@@ -1,7 +1,7 @@
 {
   "name": "alley-admin",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "node": ">=22.13.0"
   },
@@ -19,7 +19,7 @@
     "cleanup": "npm run clean:appledouble && npm run format && npm run lint"
   },
   "dependencies": {
-    "astro": "^6.1.3"
+    "astro": "^7.2.2"
   },
   "devDependencies": {
     "@astrojs/sitemap": "^3.7.2",
@@ -28,7 +28,9 @@
     "@typescript-eslint/parser": "^8.58.0",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-astro": "^1.6.0",
+    "eslint-plugin-import-x": "^4.17.1",
     "prettier": "^3.8.1",
     "prettier-plugin-astro": "^0.14.1",
     "typescript": "^5.9.3"

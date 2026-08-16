@@ -9,7 +9,9 @@ function getCorsHeaders(request: Request, env: Env): Record<string, string> {
   const allowedOrigin = env.ALLOWED_ORIGIN ?? 'https://alleyadmin.app';
   const origins = [...ALLOWED_ORIGINS, allowedOrigin];
   const requestOrigin = request.headers.get('Origin') ?? '';
-  const origin = origins.includes(requestOrigin) ? requestOrigin : 'https://alleyadmin.app';
+  const origin = origins.includes(requestOrigin)
+    ? requestOrigin
+    : 'https://alleyadmin.app';
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -51,7 +53,9 @@ export default {
     }
 
     try {
-      await env.DB.prepare('INSERT OR IGNORE INTO registrations (email) VALUES (?)')
+      await env.DB.prepare(
+        'INSERT OR IGNORE INTO registrations (email) VALUES (?)',
+      )
         .bind(email)
         .run();
     } catch {

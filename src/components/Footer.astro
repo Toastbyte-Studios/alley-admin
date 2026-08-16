@@ -1,16 +1,19 @@
 ---
 // Footer with retro styling
+import pkg from '../../package.json';
+
 const dateYear: string = new Date().getFullYear().toString();
+const version: string = pkg.version;
 ---
 
 <footer class="footer">
   <div class="footer-content">
     <div class="footer-divider"></div>
     <p>
-      &copy; {dateYear} Alley Admin • Crafted with care for bowling enthusiasts • A product of <a
-        href="https://toastbyte.studio">Toastbyte Studios</a
-      >
+      &copy; {dateYear} Alley Admin • Crafted with care for bowling enthusiasts •
+      A product of <a href="https://toastbyte.studio">Toastbyte Studios</a>
     </p>
+    <p class="footer-version">v{version}</p>
   </div>
 </footer>
 
@@ -20,7 +23,12 @@ const dateYear: string = new Date().getFullYear().toString();
     position: relative;
     width: 100%;
     z-index: 10;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 50%, #000000 100%);
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.8) 50%,
+      #000000 100%
+    );
     padding: 3rem 2rem 2rem;
     margin-top: auto;
   }
@@ -43,6 +51,12 @@ const dateYear: string = new Date().getFullYear().toString();
     font-size: 0.875rem;
     margin: 0;
     letter-spacing: 0.05em;
+  }
+
+  .footer p.footer-version {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    opacity: 0.6;
   }
 
   .footer a {
