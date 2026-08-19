@@ -49,4 +49,4 @@ Coming soon. Join the waitlist at https://alleyadmin.app
 - Website: https://alleyadmin.app
 - Alternate domain: https://alleyadmin.com (redirects to alleyadmin.app)
 - Developer: Jason Shprintz — https://jasonshprintz.com
-- Source: https://github.com/jason-shprintz/alley-admin
+- Source: https://github.com/Toastbyte-Studios/alley-admin
