@@ -99,7 +99,7 @@ export default defineConfig({
         "img-src 'self' data:",
         "font-src 'self'",
         "manifest-src 'self'",
-        `connect-src 'self'${workerOrigin ? ` ${workerOrigin}` : ''} ${cloudflareAnalytics}`,
+        `connect-src 'self'${workerOrigin ? ` ${workerOrigin}` : ''} ${cloudflareInsights} ${cloudflareAnalytics}`,
       ],
       scriptDirective: {
         resources: ["'self'", cloudflareInsights],
