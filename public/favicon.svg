@@ -8,16 +8,16 @@
   <circle cx="64" cy="70" r="8" class="hole"/>
 
   <!-- Highlight/shine effect -->
-  <ellipse cx="48" cy="38" rx="18" ry="22" class="shine" opacity="0.3"/>
+  <ellipse cx="48" cy="38" rx="18" ry="22" class="shine" opacity="0.28"/>
 
   <style>
-    .ball { fill: #e74c3c; }
-    .hole { fill: #1a1410; }
+    .ball { fill: #c8443c; }
+    .hole { fill: #1b1815; }
     .shine { fill: #ffffff; }
 
     @media (prefers-color-scheme: dark) {
-      .ball { fill: #c0392b; }
-      .hole { fill: #0a0604; }
+      .ball { fill: #e4635a; }
+      .hole { fill: #141210; }
     }
   </style>
 </svg>

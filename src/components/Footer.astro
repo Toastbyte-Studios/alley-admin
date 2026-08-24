@@ -1,5 +1,4 @@
 ---
-// Footer with retro styling
 import pkg from '../../package.json';
 
 const dateYear: string = new Date().getFullYear().toString();
@@ -8,8 +7,7 @@ const version: string = pkg.version;
 
 <footer class="footer">
   <div class="footer-content">
-    <div class="footer-divider"></div>
-    <p>
+    <p class="footer-line">
       &copy; {dateYear} Alley Admin • Crafted with care for bowling enthusiasts •
       A product of <a href="https://toastbyte.studio">Toastbyte Studios</a>
     </p>
@@ -18,61 +16,47 @@ const version: string = pkg.version;
 </footer>
 
 <style>
-  /* Footer */
   .footer {
     position: relative;
-    width: 100%;
     z-index: 10;
-    background: linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.8) 50%,
-      #000000 100%
-    );
-    padding: 3rem 2rem 2rem;
+    width: 100%;
     margin-top: auto;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-sunken);
+    padding: var(--space-md);
   }
 
   .footer-content {
-    max-width: 1000px;
+    max-width: var(--content-width);
     margin: 0 auto;
     text-align: center;
   }
 
-  .footer-divider {
-    width: 100px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #d4a574, transparent);
-    margin: 0 auto 1.5rem;
-  }
-
-  .footer p {
-    color: #a78a6a;
-    font-size: 0.875rem;
+  .footer-line {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
     margin: 0;
-    letter-spacing: 0.05em;
   }
 
-  .footer p.footer-version {
-    margin-top: 0.5rem;
+  .footer-version {
+    margin: 0.375rem 0 0;
     font-size: 0.75rem;
-    opacity: 0.6;
+    color: var(--color-text-subtle);
+    font-variant-numeric: tabular-nums;
   }
 
   .footer a {
-    color: #d4a574;
+    color: var(--color-primary);
     text-decoration: none;
     font-weight: 600;
-    transition: all 0.3s ease;
-    border-bottom: 2px solid transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.2s var(--ease),
+      border-color 0.2s var(--ease);
   }
 
   .footer a:hover {
-    color: #ea580c;
-    border-bottom-color: #ea580c;
-  }
-
-  .footer a:active {
-    color: #d97706;
+    color: var(--color-primary-hover);
+    border-bottom-color: currentColor;
   }
 </style>
