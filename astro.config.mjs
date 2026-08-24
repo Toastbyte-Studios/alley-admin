@@ -23,6 +23,7 @@ const workerOrigin = (() => {
  * its host has to be allowed even though it is not referenced by our source.
  */
 const cloudflareInsights = 'https://static.cloudflareinsights.com';
+const cloudflareAnalytics = 'https://cloudflareinsights.com';
 
 /** Shared fallback stack for both families. */
 const SYSTEM_FALLBACKS = [
@@ -98,7 +99,7 @@ export default defineConfig({
         "img-src 'self' data:",
         "font-src 'self'",
         "manifest-src 'self'",
-        `connect-src 'self'${workerOrigin ? ` ${workerOrigin}` : ''}`,
+        `connect-src 'self'${workerOrigin ? ` ${workerOrigin}` : ''} ${cloudflareAnalytics}`,
       ],
       scriptDirective: {
         resources: ["'self'", cloudflareInsights],
