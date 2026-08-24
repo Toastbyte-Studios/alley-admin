@@ -7,7 +7,19 @@ Logo.astro and favicon.svg, so the raster assets can't drift from the SVG.
 App icons are full-bleed: no rounded corners are baked in, because iOS and
 Android apply their own mask. The mark is inset to sit inside the maskable
 safe zone so nothing clips when Android rounds it aggressively.
+
+Usage:
+    python gen_assets.py [--font-dir DIR] [--out-dir DIR]
+
+The font directory should contain Archivo-400.ttf, Archivo-700.ttf, and
+Archivo-800.ttf.  It can also be supplied via the FONT_DIR environment
+variable.  The output directory defaults to the directory of this script and
+can be overridden with --out-dir or the OUT_DIR environment variable.
 """
+
+import argparse
+import os
+import sys
 
 import cairosvg
 from PIL import Image, ImageDraw, ImageFont
@@ -32,7 +44,24 @@ PINS = [
 ]
 PIN_R = 4.2
 
-FONT = "/home/claude/fonts/Archivo-{}.ttf"
+
+def _resolve_font_dir(cli_value: str | None) -> str:
+    font_dir = cli_value or os.environ.get("FONT_DIR", "")
+    if not font_dir:
+        sys.exit(
+            "error: font directory not specified.\n"
+            "Pass --font-dir DIR or set the FONT_DIR environment variable.\n"
+            "The directory must contain Archivo-400.ttf, Archivo-700.ttf, "
+            "and Archivo-800.ttf."
+        )
+    return font_dir
+
+
+def _font(font_dir: str, weight: str) -> str:
+    path = os.path.join(font_dir, f"Archivo-{weight}.ttf")
+    if not os.path.isfile(path):
+        sys.exit(f"error: font file not found: {path}")
+    return path
 
 
 def mark_svg(scale=0.78, bg=None, pin=CREAM, ball=RED, rx=None):
@@ -69,7 +98,7 @@ def app_icon(size, path):
     print(f"{path}  {size}x{size}")
 
 
-def og_image(path):
+def og_image(path, font_dir):
     """1200x630 social card matching the site's light theme."""
     W, H = 1200, 630
     img = Image.new("RGB", (W, H), PAPER)
@@ -87,9 +116,9 @@ def og_image(path):
     badge = render(mark_svg(scale=0.78, bg=TEAL, rx=14), 208)
     img.paste(badge, (96, 212), badge)
 
-    title = ImageFont.truetype(FONT.format("800"), 96)
-    tag = ImageFont.truetype(FONT.format("700"), 27)
-    body = ImageFont.truetype(FONT.format("400"), 30)
+    title = ImageFont.truetype(_font(font_dir, "800"), 96)
+    tag = ImageFont.truetype(_font(font_dir, "700"), 27)
+    body = ImageFont.truetype(_font(font_dir, "400"), 30)
 
     x = 352
     draw.text((x, 182), "Alley Admin", font=title, fill=INK)
@@ -111,8 +140,31 @@ def og_image(path):
     print(f"{path}  {W}x{H}")
 
 
-out = "/mnt/user-data/outputs"
-app_icon(192, f"{out}/icon-192.png")
-app_icon(512, f"{out}/icon-512.png")
-app_icon(180, f"{out}/apple-touch-icon.png")
-og_image(f"{out}/og-image.png")
+def main():
+    parser = argparse.ArgumentParser(
+        description="Generate Alley Admin PNG assets from the badge logo geometry."
+    )
+    parser.add_argument(
+        "--font-dir",
+        default=None,
+        help="Directory containing Archivo-{400,700,800}.ttf (overrides FONT_DIR env var).",
+    )
+    parser.add_argument(
+        "--out-dir",
+        default=None,
+        help="Output directory for generated PNG files (overrides OUT_DIR env var; "
+        "defaults to the directory of this script).",
+    )
+    args = parser.parse_args()
+
+    font_dir = _resolve_font_dir(args.font_dir)
+    out = args.out_dir or os.environ.get("OUT_DIR") or os.path.dirname(os.path.abspath(__file__))
+
+    app_icon(192, os.path.join(out, "icon-192.png"))
+    app_icon(512, os.path.join(out, "icon-512.png"))
+    app_icon(180, os.path.join(out, "apple-touch-icon.png"))
+    og_image(os.path.join(out, "og-image.png"), font_dir)
+
+
+if __name__ == "__main__":
+    main()
