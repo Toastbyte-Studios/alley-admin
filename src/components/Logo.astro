@@ -15,6 +15,7 @@
 interface Props {
   size?: number;
   variant?: 'open' | 'badge';
+  animated?: boolean;
   title?: string;
   class?: string;
 }
@@ -22,6 +23,7 @@ interface Props {
 const {
   size = 26,
   variant = 'open',
+  animated = false,
   title,
   class: className,
 } = Astro.props as Props;
@@ -42,7 +44,7 @@ const pinRadius = isBadge ? 4.2 : 4;
 ---
 
 <svg
-  class:list={['logo', `logo-${variant}`, className]}
+  class:list={['logo', `logo-${variant}`, animated && 'is-animated', className]}
   width={size}
   height={size}
   viewBox="0 0 64 64"
@@ -87,5 +89,86 @@ const pinRadius = isBadge ? 4.2 : 4;
 
   .logo-badge .pin {
     fill: var(--color-board-pin);
+  }
+
+  /*
+   * Optional entrance for the hero: pins set top-down like a rack dropping,
+   * then the ball arrives at the apex, then the whole mark drifts.
+   *
+   * Transforms here are in SVG user units, not px — the viewBox is 64 wide, so
+   * translateY(-6) is a little under a tenth of the mark's height regardless of
+   * the rendered size. Scale is avoided deliberately: scaling an SVG circle
+   * about its own center needs transform-box: fill-box, which buys nothing here.
+   *
+   * Every keyframe ends on the visible state, so the global
+   * prefers-reduced-motion rule collapses these to a static, correct mark.
+   */
+  .is-animated {
+    animation: logo-drift 5s ease-in-out 1.2s infinite;
+  }
+
+  .is-animated .pin {
+    animation: pin-set 0.45s var(--ease) both;
+  }
+
+  .is-animated .ball {
+    animation: ball-drop 0.55s var(--ease) 0.5s both;
+  }
+
+  .is-animated .pin:nth-of-type(2) {
+    animation-delay: 0.06s;
+  }
+  .is-animated .pin:nth-of-type(3) {
+    animation-delay: 0.12s;
+  }
+  .is-animated .pin:nth-of-type(4) {
+    animation-delay: 0.12s;
+  }
+  .is-animated .pin:nth-of-type(5) {
+    animation-delay: 0.18s;
+  }
+  .is-animated .pin:nth-of-type(6) {
+    animation-delay: 0.18s;
+  }
+  .is-animated .pin:nth-of-type(7) {
+    animation-delay: 0.18s;
+  }
+  .is-animated .pin:nth-of-type(8) {
+    animation-delay: 0.24s;
+  }
+  .is-animated .pin:nth-of-type(9) {
+    animation-delay: 0.24s;
+  }
+
+  @keyframes pin-set {
+    from {
+      opacity: 0;
+      transform: translateY(-3px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes ball-drop {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes logo-drift {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-2.5%);
+    }
   }
 </style>
