@@ -1,23 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- Bowling ball background circle -->
-  <circle cx="64" cy="64" r="56" class="ball"/>
+  <!-- Alley Admin mark: pins 1-7 and 10 racked into an "A", ball at the apex -->
+  <rect width="128" height="128" rx="28" class="badge"/>
 
-  <!-- Finger holes -->
-  <circle cx="52" cy="45" r="8" class="hole"/>
-  <circle cx="76" cy="45" r="8" class="hole"/>
-  <circle cx="64" cy="70" r="8" class="hole"/>
-
-  <!-- Highlight/shine effect -->
-  <ellipse cx="48" cy="38" rx="18" ry="22" class="shine" opacity="0.28"/>
+  <g transform="translate(64,64) scale(1.56) translate(-32,-32)">
+    <circle cx="32" cy="10" r="6.5" class="ball"/>
+    <circle cx="32" cy="23.5" r="4.2" class="pin"/>
+    <circle cx="24" cy="34.5" r="4.2" class="pin"/>
+    <circle cx="40" cy="34.5" r="4.2" class="pin"/>
+    <circle cx="16" cy="45.5" r="4.2" class="pin"/>
+    <circle cx="32" cy="45.5" r="4.2" class="pin"/>
+    <circle cx="48" cy="45.5" r="4.2" class="pin"/>
+    <circle cx="8" cy="56.5" r="4.2" class="pin"/>
+    <circle cx="56" cy="56.5" r="4.2" class="pin"/>
+  </g>
 
   <style>
+    .badge { fill: #0e7c77; }
+    .pin { fill: #f7f3ea; }
     .ball { fill: #c8443c; }
-    .hole { fill: #1b1815; }
-    .shine { fill: #ffffff; }
 
     @media (prefers-color-scheme: dark) {
-      .ball { fill: #e4635a; }
-      .hole { fill: #141210; }
+      .badge { fill: #17948d; }
+      .ball { fill: #cd453d; }
     }
   </style>
 </svg>

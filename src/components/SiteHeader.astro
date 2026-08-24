@@ -1,11 +1,12 @@
 ---
+import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <header class="site-header">
   <div class="header-inner">
     <a class="wordmark" href="/" aria-label="Alley Admin home">
-      <span class="wordmark-dot" aria-hidden="true"></span>
+      <Logo size={26} />
       <span class="wordmark-text">Alley Admin</span>
     </a>
     <ThemeToggle />
@@ -35,18 +36,9 @@ import ThemeToggle from './ThemeToggle.astro';
   .wordmark {
     display: inline-flex;
     align-items: center;
-    gap: 0.625rem;
+    gap: 0.5rem;
     text-decoration: none;
     color: var(--color-text);
-  }
-
-  .wordmark-dot {
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 50%;
-    background: var(--color-accent);
-    box-shadow: 0 0 0 3px var(--color-accent-soft);
-    flex-shrink: 0;
   }
 
   .wordmark-text {
