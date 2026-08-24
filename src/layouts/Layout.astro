@@ -120,7 +120,10 @@ function safeJsonLd(data: object): string {
                 : 'light';
           document.documentElement.setAttribute('data-theme', theme);
         } catch {
-          document.documentElement.setAttribute('data-theme', 'light');
+          var osTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+          document.documentElement.setAttribute('data-theme', osTheme);
         }
       })();
     </script>
