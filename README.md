@@ -35,6 +35,7 @@ leagues that need compliant reporting.
 | Path                 | What it is                                                                                    |
 | -------------------- | --------------------------------------------------------------------------------------------- |
 | `src/`               | Astro site — landing page, feature sections, waitlist form                                    |
+| `src/styles/`        | `global.css` — design tokens, light/dark themes, reset and base type                          |
 | `worker/`            | Cloudflare Worker that validates waitlist emails and writes them to D1, plus its `schema.sql` |
 | `public/`            | Static assets, icons, `robots.txt`, `llms.txt`                                                |
 | `.github/workflows/` | CI, Cloudflare Pages deploy, release tagging, version-bump check                              |

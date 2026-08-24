@@ -1,84 +1,87 @@
 ---
-// Retro bowling alley background with wood paneling and lanes
+// Ambient lane motif: a soft glow behind the hero, a fine pin-deck dot grid,
+// and lane strips anchored to the bottom edge. Purely decorative — kept low
+// contrast so it reads as texture in both themes rather than as an image.
 ---
 
-<!-- Retro wood paneling background -->
-<div class="wood-paneling"></div>
-
-<!-- Vintage dots pattern -->
-<div class="dots-pattern"></div>
-
-<!-- Retro lanes with maple wood texture -->
-<div class="bowling-lanes">
-  <div class="lane"></div>
-  <div class="lane"></div>
-  <div class="lane"></div>
+<div class="backdrop" aria-hidden="true">
+  <div class="glow"></div>
+  <div class="pin-grid"></div>
+  <div class="lanes">
+    <span class="lane"></span>
+    <span class="lane"></span>
+    <span class="lane"></span>
+    <span class="lane"></span>
+    <span class="lane"></span>
+  </div>
 </div>
 
 <style>
-  /* Retro wood paneling texture */
-  .wood-paneling {
+  .backdrop {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-      90deg,
-      rgba(101, 67, 33, 0.03) 0px,
-      rgba(101, 67, 33, 0.03) 2px,
-      transparent 2px,
-      transparent 50px
-    );
-    opacity: 0.4;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
   }
 
-  /* Vintage dots pattern */
-  .dots-pattern {
+  /* Soft primary-tinted glow sitting behind the hero */
+  .glow {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -18%;
+    left: 50%;
+    width: min(1000px, 130%);
+    height: 620px;
+    transform: translateX(-50%);
+    background: radial-gradient(
+      ellipse at center,
+      var(--color-primary-soft) 0%,
+      transparent 68%
+    );
+  }
+
+  /* Pin-deck dot grid */
+  .pin-grid {
+    position: absolute;
+    inset: 0;
     background-image: radial-gradient(
       circle,
-      rgba(212, 165, 116, 0.05) 1px,
+      var(--color-pin-dot) 1px,
       transparent 1px
     );
-    background-size: 30px 30px;
+    background-size: 28px 28px;
+    mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 72%);
   }
 
-  /* Bowling lanes with maple wood look */
-  .bowling-lanes {
+  /* Lane strips running up from the foul line */
+  .lanes {
     position: absolute;
     bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1200px, 96%);
+    height: 45vh;
     display: flex;
-    gap: 20px;
-    padding: 0 5%;
-    opacity: 0.3;
-    z-index: 1;
+    gap: 2px;
+    mask-image: linear-gradient(0deg, #000 0%, transparent 88%);
+    -webkit-mask-image: linear-gradient(0deg, #000 0%, transparent 88%);
   }
 
   .lane {
     flex: 1;
-    background: linear-gradient(
-      180deg,
-      rgba(212, 165, 116, 0.2) 0%,
-      rgba(212, 165, 116, 0.1) 50%,
-      rgba(212, 165, 116, 0.2) 100%
-    );
-    border-left: 1px solid rgba(212, 165, 116, 0.3);
-    border-right: 1px solid rgba(212, 165, 116, 0.3);
+    background: var(--color-lane);
+    border-left: 1px solid var(--color-lane-edge);
+    border-right: 1px solid var(--color-lane-edge);
   }
 
-  /* Responsive Design */
   @media (max-width: 768px) {
-    .bowling-lanes {
-      gap: 10px;
-      height: 40px;
+    .lanes {
+      height: 30vh;
+    }
+
+    .lane:nth-child(n + 4) {
+      display: none;
     }
   }
 </style>

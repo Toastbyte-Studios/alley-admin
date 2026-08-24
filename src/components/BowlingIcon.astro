@@ -1,14 +1,18 @@
 ---
-// Retro bowling icon with vintage scoreboard aesthetic
+// Retro scoreboard mark. Composition and motion are unchanged from the
+// original; colors now come from tokens so it reads correctly in both themes.
+// The board face stays dark in light mode on purpose — a lit scoreboard in a
+// dim room is the whole idea.
 ---
 
 <svg
   class="bowling-icon"
-  width="160"
-  height="140"
+  width="168"
+  height="148"
   viewBox="0 0 160 140"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
+  role="img"
   aria-label="Retro bowling scoreboard"
 >
   <!-- Scoreboard frame -->
@@ -17,144 +21,121 @@
     y="10"
     width="140"
     height="120"
-    rx="8"
-    fill="#2d1f16"
-    stroke="#d4a574"
-    stroke-width="3"></rect>
+    rx="10"
+    class="board-face"
+    stroke-width="2.5"></rect>
 
   <!-- Inner frame accent -->
   <rect
-    x="20"
-    y="20"
-    width="120"
-    height="100"
-    rx="4"
+    x="19"
+    y="19"
+    width="122"
+    height="102"
+    rx="6"
     fill="none"
-    stroke="#d4a574"
-    stroke-width="1"
-    opacity="0.5"></rect>
+    class="board-inner"
+    stroke-width="1"></rect>
 
-  <!-- Bowling Pins (arranged in triangle) -->
+  <!-- Top rail -->
+  <line x1="19" y1="43" x2="141" y2="43" class="board-rail" stroke-width="1"
+  ></line>
+
+  <!-- Pin rack, arranged in the standard triangle -->
   <g class="pins">
-    <!-- Back row (4 pins) -->
-    <circle
-      cx="55"
-      cy="50"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
-    <circle
-      cx="70"
-      cy="50"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
-    <circle
-      cx="85"
-      cy="50"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
-    <circle
-      cx="100"
-      cy="50"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
+    <circle cx="55" cy="58" r="5" class="pin" stroke-width="1.5"></circle>
+    <circle cx="70" cy="58" r="5" class="pin" stroke-width="1.5"></circle>
+    <circle cx="85" cy="58" r="5" class="pin" stroke-width="1.5"></circle>
+    <circle cx="100" cy="58" r="5" class="pin" stroke-width="1.5"></circle>
 
-    <!-- Third row (3 pins) -->
-    <circle
-      cx="62"
-      cy="62"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
-    <circle
-      cx="78"
-      cy="62"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
-    <circle
-      cx="93"
-      cy="62"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
+    <circle cx="62" cy="70" r="5" class="pin" stroke-width="1.5"></circle>
+    <circle cx="78" cy="70" r="5" class="pin" stroke-width="1.5"></circle>
+    <circle cx="93" cy="70" r="5" class="pin" stroke-width="1.5"></circle>
 
-    <!-- Second row (2 pins) -->
-    <circle
-      cx="70"
-      cy="74"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
-    <circle
-      cx="85"
-      cy="74"
-      r="5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="1.5"></circle>
+    <circle cx="70" cy="82" r="5" class="pin" stroke-width="1.5"></circle>
+    <circle cx="85" cy="82" r="5" class="pin" stroke-width="1.5"></circle>
 
-    <!-- Front pin -->
-    <circle
-      cx="77.5"
-      cy="86"
-      r="5.5"
-      fill="#f5f1e8"
-      stroke="#d4a574"
-      stroke-width="2"></circle>
+    <circle cx="77.5" cy="94" r="5.5" class="pin pin-head" stroke-width="2"
+    ></circle>
   </g>
 
-  <!-- Retro bowling ball with marbled effect -->
+  <!-- Bowling ball -->
   <g class="ball">
-    <circle cx="80" cy="105" r="12" fill="url(#marbleGradient)"></circle>
-    <circle cx="76" cy="100" r="2" fill="#1a1410"></circle>
-    <circle cx="83" cy="99" r="2" fill="#1a1410"></circle>
-    <circle cx="79.5" cy="107" r="2" fill="#1a1410"></circle>
-    <!-- Shine effect -->
-    <circle cx="75" cy="99" r="3" fill="white" opacity="0.3"></circle>
+    <circle cx="80" cy="112" r="11" fill="url(#ballGradient)"></circle>
+    <circle cx="76.5" cy="108" r="1.8" class="ball-hole"></circle>
+    <circle cx="83.5" cy="107.5" r="1.8" class="ball-hole"></circle>
+    <circle cx="80" cy="114" r="1.8" class="ball-hole"></circle>
+    <circle cx="75.5" cy="107" r="2.6" fill="#ffffff" opacity="0.28"></circle>
   </g>
 
-  <!-- Retro strike lights -->
+  <!-- Strike lights -->
   <g class="lights">
-    <circle cx="35" cy="35" r="3" fill="#d97706" opacity="0.8"></circle>
-    <circle cx="125" cy="35" r="3" fill="#d97706" opacity="0.8"></circle>
+    <circle cx="32" cy="31" r="3" class="light"></circle>
+    <circle cx="128" cy="31" r="3" class="light"></circle>
   </g>
 
-  <!-- Gradients -->
   <defs>
-    <radialGradient id="marbleGradient">
-      <stop offset="0%" style="stop-color:#ea580c;stop-opacity:1"></stop>
-      <stop offset="50%" style="stop-color:#c2410c;stop-opacity:1"></stop>
-      <stop offset="100%" style="stop-color:#7c2d12;stop-opacity:1"></stop>
+    <radialGradient id="ballGradient" cx="35%" cy="30%">
+      <stop offset="0%" class="ball-stop-1"></stop>
+      <stop offset="55%" class="ball-stop-2"></stop>
+      <stop offset="100%" class="ball-stop-3"></stop>
     </radialGradient>
   </defs>
 </svg>
 
 <style>
   .bowling-icon {
-    filter: drop-shadow(0 8px 16px rgba(212, 165, 116, 0.2));
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.18));
     animation: float 3s ease-in-out infinite;
+  }
+
+  .board-face {
+    fill: var(--color-board-face);
+    stroke: var(--color-board-frame);
+  }
+
+  .board-inner,
+  .board-rail {
+    stroke: var(--color-board-frame);
+    opacity: 0.35;
+  }
+
+  .pin {
+    fill: var(--color-board-pin);
+    stroke: var(--color-board-pin-edge);
+  }
+
+  .pin-head {
+    stroke: var(--color-board-frame);
+  }
+
+  .ball-hole {
+    fill: var(--color-board-face);
+  }
+
+  .ball-stop-1 {
+    stop-color: var(--aa-strike-400);
+  }
+
+  .ball-stop-2 {
+    stop-color: var(--aa-strike-500);
+  }
+
+  .ball-stop-3 {
+    stop-color: var(--aa-strike-600);
+  }
+
+  .light {
+    fill: var(--color-highlight);
   }
 
   .pins {
     animation: pinShake 3s ease-in-out infinite;
-    transform-origin: 77.5px 68px;
+    transform-origin: 77.5px 76px;
   }
 
   .ball {
     animation: ballRoll 4s ease-in-out infinite;
-    transform-origin: 80px 105px;
+    transform-origin: 80px 112px;
   }
 
   .lights {
@@ -200,7 +181,7 @@
       opacity: 1;
     }
     50% {
-      opacity: 0.3;
+      opacity: 0.35;
     }
   }
 </style>
