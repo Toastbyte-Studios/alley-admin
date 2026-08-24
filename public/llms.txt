@@ -1,6 +1,6 @@
 # Alley Admin
 
-> Modern, web-based bowling league management software that replaces outdated desktop tools like CDE Software's BLS. Built for league secretaries, bowling alley managers, and tournament organizers.
+> Modern, web-based bowling league management software that replaces outdated desktop tools like CDE Software's BLS. Built for league secretaries, bowling alley managers, and tournament organizers. Currently in development — the site at [alleyadmin.app](https://alleyadmin.app) collects waitlist signups.
 
 ## What It Does
 
@@ -29,24 +29,34 @@ League secretaries currently juggle multiple pieces of desktop software (often C
 ## Frequently Asked Questions
 
 ### What is Alley Admin?
+
 Alley Admin is a web-based bowling league management application. It handles team management, digital scorekeeping, automatic handicap calculations, standings, scheduling, and tournament brackets — all in one place.
 
 ### How is Alley Admin different from CDE Software?
+
 CDE Software (BLS, BTM, TBRAC) requires separate desktop applications for leagues, tournaments, and side pots, with per-season license purchases. Alley Admin is a single cloud-based platform that works in any browser, requires no installation, and combines all three functions.
 
 ### Is Alley Admin free?
-Pricing has not been announced yet. Join the waitlist at https://alleyadmin.app to be notified when pricing and early access are available.
+
+Pricing has not been announced yet. Join the waitlist at [alleyadmin.app](https://alleyadmin.app) to be notified when pricing and early access are available.
 
 ### What devices does Alley Admin work on?
+
 Alley Admin runs in any modern web browser on desktop, tablet, or phone. No downloads or installations are required.
 
-## Status
+### When is it available?
 
-Coming soon. Join the waitlist at https://alleyadmin.app
+Coming soon. There is no public release date yet. Joining the waitlist at [alleyadmin.app](https://alleyadmin.app) is the only way to be notified.
 
-## Links
+## Primary Links
 
-- Website: https://alleyadmin.app
-- Alternate domain: https://alleyadmin.com (redirects to alleyadmin.app)
-- Developer: Jason Shprintz — https://jasonshprintz.com
-- Source: https://github.com/Toastbyte-Studios/alley-admin
+- [Alley Admin home and waitlist](https://alleyadmin.app): the landing page, feature overview, and email signup form.
+- [Sitemap](https://alleyadmin.app/sitemap-index.xml): every indexable URL on the site.
+- [robots.txt](https://alleyadmin.app/robots.txt): crawler policy — all major search and AI crawlers are allowed.
+
+## Optional
+
+- [Source repository](https://github.com/Toastbyte-Studios/alley-admin): the Astro marketing site and the Cloudflare Worker backing the waitlist form.
+- [Toastbyte Studios](https://toastbyte.studio): the studio behind Alley Admin.
+- [Jason Shprintz](https://jasonshprintz.com): the developer.
+- [alleyadmin.com](https://alleyadmin.com): alternate domain, redirects to alleyadmin.app.
