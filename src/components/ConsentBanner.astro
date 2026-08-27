@@ -198,6 +198,20 @@
       show();
     }
 
+    // The consent bridge (`initAnalyticsConsentBridge`) runs asynchronously and
+    // may backfill the `analytics-consent` cookie after this script has already
+    // decided to show the banner (e.g. a returning visitor whose Zaraz cookie
+    // predates this banner). Re-check once the Zaraz Consent API is ready so
+    // that the banner is closed if consent was already recorded.
+    const hideIfAnswered = () => {
+      if (readAnalyticsConsent() !== null) {
+        banner.hidden = true;
+      }
+    };
+
+    document.addEventListener('zarazConsentAPIReady', hideIfAnswered);
+    document.addEventListener('zarazConsentChoicesUpdated', hideIfAnswered);
+
     // Lets a footer link re-open the banner so a choice can be withdrawn as
     // easily as it was given.
     document.addEventListener('consent:reopen', show);
