@@ -1,6 +1,8 @@
 ---
 import { Font } from 'astro:assets';
 
+import ConsentBanner from '../components/ConsentBanner.astro';
+
 import '../styles/global.css';
 
 interface Props {
@@ -220,10 +222,20 @@ function safeJsonLd(data: object): string {
     <slot />
 
     <!--
+      Replaces the stock Zaraz consent modal. "Show consent modal" must be
+      disabled in the Zaraz dashboard or both will appear at once.
+    -->
+    <ConsentBanner />
+
+    <!--
       Keeps the `analytics-consent` cookie in step with the Zaraz consent
-      modal, so the Measurement Protocol fallback in
+      state, so the Measurement Protocol fallback in
       functions/api/analytics/event.ts honours the same choice. Zaraz only
       gates the tools it loads itself, and cannot see that endpoint.
+
+      Still needed alongside the banner above: the banner covers choices made
+      here, this covers a preference changed through any other route and
+      backfills a cleared cookie.
 
       Bundled and deferred by Astro; it attaches listeners rather than reading
       consent at parse time, so execution order relative to Zaraz is safe.
