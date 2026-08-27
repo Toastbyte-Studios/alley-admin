@@ -125,9 +125,10 @@ quiet. It is same-origin only, rate-limited per isolate, and returns `ok` withou
 `ANALYTICS_GA4_MEASUREMENT_ID` and `ANALYTICS_GA4_API_SECRET` are unset. See `.env.example` for
 where those are configured.
 
-Consent is gated behind `PUBLIC_ANALYTICS_REQUIRE_CONSENT`, currently `0`. Leave it there until a
-banner exists: with the flag on and no banner, absent consent counts as a decline and nothing is
-sent at all.
+Consent is gated behind `PUBLIC_ANALYTICS_REQUIRE_CONSENT`, currently `1`. The Zaraz Consent
+Management platform is enabled on the alleyadmin.app zone with an "Analytics" purpose assigned to
+the GA4 tool, and `initAnalyticsConsentBridge` in `src/lib/analytics-client.ts` mirrors the
+visitor's choice from that modal into the `analytics-consent` cookie.
 
 ## Deployment
 

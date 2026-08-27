@@ -35,8 +35,10 @@ export type ConsentState = ConsentValue | 'not-required' | null;
  * literal in the browser bundle. It is `PUBLIC_`-prefixed because Astro only
  * exposes variables with that prefix to client code.
  *
- * This is 0 today and should stay 0 until a consent banner exists. Turning it
- * on without one means no events at all, since absent consent is a decline.
+ * This is 1. The Zaraz Consent Management platform is enabled on the alleyadmin.app zone with an
+ * "Analytics" purpose assigned to the GA4 tool, and `initAnalyticsConsentBridge` in
+ * analytics-client.ts mirrors the visitor's choice from that modal into the
+ * `analytics-consent` cookie.
  */
 export function isAnalyticsConsentRequired(): boolean {
   return import.meta.env.PUBLIC_ANALYTICS_REQUIRE_CONSENT === '1';
