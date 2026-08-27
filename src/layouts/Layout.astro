@@ -9,6 +9,7 @@ interface Props {
   keywords?: string;
   ogImage?: string;
   canonical?: string;
+  robots?: string;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   keywords = 'bowling league management, bowling software, league management system, bowling scores, team management, bowling statistics, sports league software, bowling alley software, bowling league secretary, CDE software alternative',
   ogImage = '/og-image.png',
   canonical,
+  robots = 'index, follow',
 } = Astro.props as Props;
 
 if (!Astro.site) {
@@ -137,7 +139,7 @@ function safeJsonLd(data: object): string {
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content="Alley Admin" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
     <meta name="language" content="English" />
     <meta
       name="theme-color"
