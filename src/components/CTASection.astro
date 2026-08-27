@@ -33,6 +33,8 @@
 </section>
 
 <script>
+  import { ANALYTICS_EVENTS, trackClientEvent } from '../lib/analytics-client';
+
   const form = document.getElementById('notifyForm');
   const submitButton = document.getElementById('submitButton');
   const formMessage = document.getElementById('formMessage');
@@ -50,6 +52,13 @@
       submitButton.disabled = true;
       submitButton.textContent = 'Reserving...';
       formMessage.classList.remove('is-error');
+
+      trackClientEvent(ANALYTICS_EVENTS.waitlistSignupStarted);
+
+      // Set before the request and narrowed once we have a status, so the
+      // catch below reports what actually went wrong rather than lumping a
+      // rejected address in with a dropped connection.
+      let failureReason = 'network_error';
 
       try {
         const workerUrl =
@@ -79,16 +88,26 @@
         }
 
         if (response.ok) {
+          trackClientEvent(ANALYTICS_EVENTS.waitlistSignupSucceeded);
           form.style.display = 'none';
           formMessage.textContent =
             "You're on the list! We'll notify you when we launch. 🎳";
           formMessage.classList.add('is-success');
         } else {
+          failureReason =
+            response.status === 400
+              ? 'invalid_email'
+              : response.status >= 500
+                ? 'server_error'
+                : `http_${response.status}`;
           throw new Error(
             serverMessage || 'Something went wrong. Please try again.',
           );
         }
       } catch (error) {
+        trackClientEvent(ANALYTICS_EVENTS.waitlistSignupFailed, {
+          reason: failureReason,
+        });
         formMessage.textContent =
           error instanceof Error
             ? error.message

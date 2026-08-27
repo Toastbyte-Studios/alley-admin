@@ -39,6 +39,8 @@
 </button>
 
 <script>
+  import { ANALYTICS_EVENTS, trackClientEvent } from '../lib/analytics-client';
+
   const STORAGE_KEY = 'aa-theme';
   const toggle = document.getElementById('themeToggle');
 
@@ -61,6 +63,8 @@
 
       document.documentElement.setAttribute('data-theme', next);
       toggle.setAttribute('aria-label', label(next));
+
+      trackClientEvent(ANALYTICS_EVENTS.themeToggled, { theme: next });
 
       try {
         localStorage.setItem(STORAGE_KEY, next);
