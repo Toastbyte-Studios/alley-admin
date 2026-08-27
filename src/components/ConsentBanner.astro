@@ -1,0 +1,205 @@
+---
+/**
+ * Consent banner.
+ *
+ * Replaces the stock Cloudflare Zaraz consent modal. Requires "Show consent
+ * modal" to be DISABLED in the Zaraz dashboard (Consent settings) while
+ * "Enable Consent Management" stays enabled — otherwise both this and the
+ * Zaraz modal appear at once.
+ *
+ * Shown only when `readAnalyticsConsent()` returns null, meaning consent is
+ * required and the visitor has not answered. A recorded 'denied' does not
+ * bring it back; the footer link re-opens it for anyone who wants to change
+ * their mind.
+ *
+ * Accept and Decline are given equal visual weight on purpose. Making refusal
+ * harder than acceptance is the specific pattern regulators have fined people
+ * for, and it is not worth the handful of extra sessions.
+ */
+---
+
+<div
+  id="consent-banner"
+  class="consent-banner"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="consent-banner-title"
+  aria-describedby="consent-banner-body"
+  hidden
+>
+  <div class="consent-banner__inner">
+    <div class="consent-banner__text">
+      <p id="consent-banner-title" class="consent-banner__title">
+        Cookies for analytics
+      </p>
+      <p id="consent-banner-body" class="consent-banner__body">
+        We'd like to count visits and see which pages people open, using Google
+        Analytics. Nothing is sold, and there are no ad trackers. Decline and
+        the site works exactly the same. <a href="/privacy">Privacy</a>
+      </p>
+    </div>
+
+    <div class="consent-banner__actions">
+      <button type="button" data-consent="decline" class="consent-btn">
+        Decline
+      </button>
+      <button type="button" data-consent="accept" class="consent-btn">
+        Accept
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .consent-banner {
+    position: fixed;
+    z-index: 100;
+    inset-inline: 0;
+    bottom: 0;
+    padding: var(--space-sm);
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+    animation: consent-rise 0.28s var(--ease) both;
+  }
+
+  .consent-banner[hidden] {
+    display: none;
+  }
+
+  @keyframes consent-rise {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .consent-banner__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    align-items: center;
+    justify-content: space-between;
+    max-width: var(--content-width);
+    margin-inline: auto;
+  }
+
+  .consent-banner__text {
+    flex: 1 1 22rem;
+  }
+
+  .consent-banner__title {
+    margin: 0 0 var(--space-2xs);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -0.015em;
+    color: var(--color-text);
+  }
+
+  .consent-banner__body {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  .consent-banner__body a {
+    color: var(--color-primary);
+    text-underline-offset: 2px;
+  }
+
+  .consent-banner__actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: var(--space-xs);
+  }
+
+  /*
+   * Both buttons share one class. The accept action is not styled as the
+   * primary call to action, so neither choice is nudged.
+   */
+  .consent-btn {
+    padding: 0.5rem 1.125rem;
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text);
+    background: var(--color-bg-sunken);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition:
+      background-color 0.18s var(--ease),
+      border-color 0.18s var(--ease);
+  }
+
+  .consent-btn:hover {
+    background: var(--color-primary-soft);
+    border-color: var(--color-primary);
+  }
+
+  @media (max-width: 30rem) {
+    .consent-banner__actions {
+      flex: 1 1 100%;
+    }
+
+    .consent-btn {
+      flex: 1;
+    }
+  }
+</style>
+
+<script>
+  import {
+    readAnalyticsConsent,
+    setAnalyticsConsent,
+  } from '../lib/analytics-client';
+
+  const banner = document.getElementById('consent-banner');
+
+  if (banner) {
+    const show = () => {
+      banner.hidden = false;
+    };
+
+    const choose = (granted: boolean) => {
+      // Writes the `analytics-consent` cookie and calls
+      // `zaraz.consent.setAll`, so the Zaraz tools and the Pages Function
+      // fallback both act on the same decision.
+      setAnalyticsConsent(granted);
+
+      if (granted) {
+        // Pageview events Zaraz withheld while consent was absent. Without
+        // this the first pageview of the session is lost.
+        try {
+          window.zaraz?.consent?.sendQueuedEvents?.();
+        } catch {
+          // no-op
+        }
+      }
+
+      banner.hidden = true;
+    };
+
+    banner.addEventListener('click', (event) => {
+      const target = (event.target as HTMLElement | null)?.closest<HTMLElement>(
+        '[data-consent]',
+      );
+      if (!target) return;
+      choose(target.dataset.consent === 'accept');
+    });
+
+    // 'not-required' means the consent flag is off, so nothing needs asking.
+    // 'granted' and 'denied' are both answered. Only null opens the banner.
+    if (readAnalyticsConsent() === null) {
+      show();
+    }
+
+    // Lets a footer link re-open the banner so a choice can be withdrawn as
+    // easily as it was given.
+    document.addEventListener('consent:reopen', show);
+  }
+</script>
