@@ -134,9 +134,10 @@ export function setAnalyticsConsent(granted: boolean) {
  * Zaraz via `consent.setAll`, and this runs from Zaraz's own change event.
  * Only the cookie is written here.
  *
- * One purpose ("Analytics") is configured today, so any granted purpose means
- * analytics is allowed. If a second purpose is ever added, match on
- * `zaraz.consent.purposes` by name instead of collapsing with `.some()`.
+ * Tries to identify the "Analytics" purpose by name and mirror only that value
+ * into the cookie, so other granted purposes don't accidentally enable
+ * analytics tracking. Falls back to "any granted purpose" if purpose metadata
+ * is unavailable.
  */
 function syncConsentFromZaraz() {
   const getAll = window.zaraz?.consent?.getAll;
@@ -145,7 +146,28 @@ function syncConsentFromZaraz() {
   }
 
   try {
-    const granted = Object.values(getAll()).some(Boolean);
+    const all = getAll();
+    const purposes = (window.zaraz?.consent as any)?.purposes as
+      | Record<string, { id?: string; name?: unknown }>
+      | undefined;
+
+    const analyticsPurposeId = purposes
+      ? Object.values(purposes).find((p) => {
+          const name = (p as any)?.name;
+          if (typeof name === 'string') return name === 'Analytics';
+          if (name && typeof name === 'object') {
+            return Object.values(name as Record<string, unknown>).includes(
+              'Analytics',
+            );
+          }
+          return false;
+        })?.id
+      : undefined;
+
+    const granted = analyticsPurposeId
+      ? Boolean(all[analyticsPurposeId])
+      : Object.values(all).some(Boolean);
+
     writeConsentCookie(granted ? 'granted' : 'denied');
   } catch {
     // no-op
