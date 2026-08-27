@@ -9,6 +9,18 @@ const version: string = pkg.version;
   <div class="footer-content">
     <nav class="footer-nav" aria-label="Footer">
       <a href="/privacy">Privacy Policy</a>
+      <!--
+        Hidden until the script below confirms consent is actually being
+        asked for. With PUBLIC_ANALYTICS_REQUIRE_CONSENT=0 there is no choice
+        to revisit, and a button that reopened an empty decision would just be
+        confusing.
+      -->
+      <span class="footer-sep" data-consent-reopen-wrap hidden aria-hidden="true"
+        >•</span
+      >
+      <button type="button" class="footer-linkish" data-consent-reopen hidden>
+        Cookie settings
+      </button>
     </nav>
     <p class="footer-line">
       &copy; {dateYear} Alley Admin • Crafted with care for bowling enthusiasts •
@@ -22,7 +34,11 @@ const version: string = pkg.version;
 </footer>
 
 <script>
-  import { ANALYTICS_EVENTS, trackClientEvent } from '../lib/analytics-client';
+  import {
+    ANALYTICS_EVENTS,
+    getAnalyticsConsentRequirement,
+    trackClientEvent,
+  } from '../lib/analytics-client';
 
   // Keyed off the attribute rather than an id so adding another outbound link
   // is a markup change, not a script change.
@@ -35,6 +51,27 @@ const version: string = pkg.version;
         href: link.href,
       });
     });
+  }
+
+  /*
+   * Withdrawing consent has to be as easy as giving it, so the banner needs a
+   * way back once it has been answered and dismissed. ConsentBanner.astro
+   * listens for `consent:reopen`.
+   */
+  if (getAnalyticsConsentRequirement()) {
+    for (const el of document.querySelectorAll<HTMLElement>(
+      '[data-consent-reopen], [data-consent-reopen-wrap]',
+    )) {
+      el.hidden = false;
+    }
+
+    for (const button of document.querySelectorAll<HTMLElement>(
+      '[data-consent-reopen]',
+    )) {
+      button.addEventListener('click', () => {
+        document.dispatchEvent(new CustomEvent('consent:reopen'));
+      });
+    }
   }
 </script>
 
@@ -58,6 +95,39 @@ const version: string = pkg.version;
   .footer-nav {
     margin-bottom: 0.5rem;
     font-size: 0.8125rem;
+  }
+
+  .footer-sep {
+    color: var(--color-text-subtle);
+    margin-inline: 0.25rem;
+  }
+
+  .footer-sep[hidden],
+  .footer-linkish[hidden] {
+    display: none;
+  }
+
+  /*
+   * A button, because it triggers an action rather than navigating. Styled to
+   * match the anchor beside it so the row still reads as one set of links.
+   */
+  .footer-linkish {
+    padding: 0;
+    font: inherit;
+    color: var(--color-primary);
+    font-weight: 600;
+    background: none;
+    border: none;
+    border-bottom: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      color 0.2s var(--ease),
+      border-color 0.2s var(--ease);
+  }
+
+  .footer-linkish:hover {
+    color: var(--color-primary-hover);
+    border-bottom-color: currentColor;
   }
 
   .footer-line {
