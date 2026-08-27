@@ -209,8 +209,12 @@
       }
     };
 
-    document.addEventListener('zarazConsentAPIReady', hideIfAnswered);
-    document.addEventListener('zarazConsentChoicesUpdated', hideIfAnswered);
+    document.addEventListener('zarazConsentAPIReady', hideIfAnswered, {
+      once: true,
+    });
+    document.addEventListener('zarazConsentChoicesUpdated', hideIfAnswered, {
+      once: true,
+    });
 
     // Lets a footer link re-open the banner so a choice can be withdrawn as
     // easily as it was given.
