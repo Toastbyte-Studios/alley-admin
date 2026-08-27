@@ -9,11 +9,31 @@ const version: string = pkg.version;
   <div class="footer-content">
     <p class="footer-line">
       &copy; {dateYear} Alley Admin • Crafted with care for bowling enthusiasts •
-      A product of <a href="https://toastbyte.studio">Toastbyte Studios</a>
+      A product of <a
+        href="https://toastbyte.studio"
+        data-outbound="toastbyte-studio">Toastbyte Studios</a
+      >
     </p>
     <p class="footer-version">v{version}</p>
   </div>
 </footer>
+
+<script>
+  import { ANALYTICS_EVENTS, trackClientEvent } from '../lib/analytics-client';
+
+  // Keyed off the attribute rather than an id so adding another outbound link
+  // is a markup change, not a script change.
+  for (const link of document.querySelectorAll('a[data-outbound]')) {
+    if (!(link instanceof HTMLAnchorElement)) continue;
+
+    link.addEventListener('click', () => {
+      trackClientEvent(ANALYTICS_EVENTS.outboundLinkClicked, {
+        destination: link.dataset.outbound ?? 'unknown',
+        href: link.href,
+      });
+    });
+  }
+</script>
 
 <style>
   .footer {

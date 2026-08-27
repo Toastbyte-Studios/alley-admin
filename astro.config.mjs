@@ -25,6 +25,19 @@ const workerOrigin = (() => {
 const cloudflareInsights = 'https://static.cloudflareinsights.com';
 const cloudflareAnalytics = 'https://cloudflareinsights.com';
 
+/**
+ * Zaraz deliberately gets no allowance of its own here. Everything it loads
+ * and everything it posts to lives under `/cdn-cgi/zaraz/` on this origin, so
+ * `'self'` already covers it, and GA4 delivery happens server-side at the edge
+ * rather than as a browser request to google-analytics.com.
+ *
+ * The one thing to watch: Cloudflare injects Zaraz at the edge, after Astro
+ * has computed the script hashes below. If a future Zaraz configuration starts
+ * injecting an *inline* bootstrap rather than a `<script src>`, the hash-based
+ * `script-src` will block it and the console will say so. Check there first if
+ * events stop arriving.
+ */
+
 /** Shared fallback stack for both families. */
 const SYSTEM_FALLBACKS = [
   '-apple-system',

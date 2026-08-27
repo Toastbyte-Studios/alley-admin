@@ -35,7 +35,9 @@ leagues that need compliant reporting.
 | Path                 | What it is                                                                                    |
 | -------------------- | --------------------------------------------------------------------------------------------- |
 | `src/`               | Astro site — landing page, feature sections, waitlist form                                    |
+| `src/lib/`           | Analytics — event vocabulary, consent state, and the Zaraz tracking wrapper                   |
 | `src/styles/`        | `global.css` — design tokens, light/dark themes, reset and base type                          |
+| `functions/`         | Cloudflare Pages Function — Measurement Protocol fallback for analytics events                |
 | `worker/`            | Cloudflare Worker that validates waitlist emails and writes them to D1, plus its `schema.sql` |
 | `public/`            | Static assets, icons, `robots.txt`, `llms.txt`                                                |
 | `.github/workflows/` | CI, Cloudflare Pages deploy, release tagging, version-bump check                              |
@@ -94,6 +96,38 @@ the first submission, since the table it inserts into doesn't exist yet.
 
 `wrangler.toml` ships with placeholder `database_id` values for the `dev` and `production`
 environments — replace them with the IDs returned by `wrangler d1 create` before deploying.
+
+## Analytics
+
+Events go to GA4 (`G-P73EZX3K69`) through **Cloudflare Zaraz**, configured on the `alleyadmin.app`
+zone. That configuration lives in the Cloudflare dashboard — the measurement ID is not committed
+here, and there is no gtag.js snippet in the HTML. Zaraz serves the tracking script from our own
+origin and delivers to GA4 at the edge, which is why the CSP in `astro.config.mjs` needs no
+third-party allowance for it.
+
+`src/lib/` holds three modules:
+
+| Module                 | What it is                                                                    |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| `analytics-events.ts`  | The event vocabulary. Every name here must be fired from somewhere.           |
+| `analytics-consent.ts` | Cookie-based consent state, readable from both the browser and server-side.   |
+| `analytics-client.ts`  | `trackClientEvent()` — the consent gate plus the Zaraz call and its fallback. |
+
+Call sites: the waitlist form (`CTASection.astro`) fires started / succeeded / failed, the footer
+link fires `outbound_link_clicked`, and the theme toggle fires `theme_toggled`. There is no manual
+`page_view` — this is one statically rendered route, so Zaraz's automatic Pageviews action already
+covers it, and firing our own would double-count every visit.
+
+`functions/api/analytics/event.ts` is a fallback for visitors whose browser never loaded Zaraz. It
+reaches GA4 through the Measurement Protocol using a server-derived identifier, so those events do
+**not** join the visitor's real session — a deliberate trade, but it means the endpoint should stay
+quiet. It is same-origin only, rate-limited per isolate, and returns `ok` without delivering when
+`ANALYTICS_GA4_MEASUREMENT_ID` and `ANALYTICS_GA4_API_SECRET` are unset. See `.env.example` for
+where those are configured.
+
+Consent is gated behind `PUBLIC_ANALYTICS_REQUIRE_CONSENT`, currently `0`. Leave it there until a
+banner exists: with the flag on and no banner, absent consent counts as a decline and nothing is
+sent at all.
 
 ## Deployment
 
