@@ -33,12 +33,18 @@ declare global {
 // never an identifier.
 
 /**
- * Zaraz's own record of the visitor's choice. Only its PRESENCE is read, never
- * its contents: the format is not a documented contract, the name is
- * configurable in the Zaraz dashboard, and its keys are per-zone random purpose
- * IDs. `zaraz.consent.getAll()` is the supported way to read the decision.
+ * Zaraz's own record of the visitor's choice. Only the PRESENCE of one of these
+ * is read, never the contents: the format is not a documented contract, and the
+ * keys are per-zone random purpose IDs. `zaraz.consent.getAll()` is the
+ * supported way to read the actual decision.
+ *
+ * The name is configurable per zone in the Zaraz dashboard under Consent.
+ * `alleyadmin.app` uses `zaraz-consent`; `cf_consent` is Cloudflare's
+ * documented default and is kept for the zones that have not been checked.
+ * Both are tested so this file can be copied between zones unchanged — extend
+ * the list rather than editing it if another zone differs again.
  */
-const ZARAZ_CONSENT_COOKIE = 'cf_consent';
+const ZARAZ_CONSENT_COOKIES = ['zaraz-consent', 'cf_consent'];
 
 function readConsentCookie(): ConsentValue | null {
   if (typeof document === 'undefined') {
@@ -188,7 +194,7 @@ function reconcileExistingConsent() {
   if (readConsentCookie() !== null) {
     return;
   }
-  if (!hasCookie(ZARAZ_CONSENT_COOKIE)) {
+  if (!ZARAZ_CONSENT_COOKIES.some((name) => hasCookie(name))) {
     return;
   }
   syncConsentFromZaraz();
