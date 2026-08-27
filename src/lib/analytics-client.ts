@@ -22,6 +22,10 @@ declare global {
         APIReady?: boolean;
         setAll?: (value: boolean) => void;
         getAll?: () => Record<string, boolean>;
+        // Delivers Pageview events Zaraz withheld while consent was absent.
+        // Called by ConsentBanner.astro immediately after a visitor accepts,
+        // otherwise the first pageview of the session is lost.
+        sendQueuedEvents?: () => void;
       };
       set?: (key: string, value: unknown) => void;
     };
