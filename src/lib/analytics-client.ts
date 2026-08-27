@@ -19,7 +19,9 @@ declare global {
     zaraz?: {
       track?: (eventName: string, params?: Record<string, unknown>) => void;
       consent?: {
+        APIReady?: boolean;
         setAll?: (value: boolean) => void;
+        getAll?: () => Record<string, boolean>;
       };
       set?: (key: string, value: unknown) => void;
     };
@@ -29,6 +31,14 @@ declare global {
 // The consent cookie is deliberately NOT HttpOnly: a banner has to read it to
 // know whether to show, and write it when clicked. It holds one enum value and
 // never an identifier.
+
+/**
+ * Zaraz's own record of the visitor's choice. Only its PRESENCE is read, never
+ * its contents: the format is not a documented contract, the name is
+ * configurable in the Zaraz dashboard, and its keys are per-zone random purpose
+ * IDs. `zaraz.consent.getAll()` is the supported way to read the decision.
+ */
+const ZARAZ_CONSENT_COOKIE = 'cf_consent';
 
 function readConsentCookie(): ConsentValue | null {
   if (typeof document === 'undefined') {
@@ -59,6 +69,15 @@ function writeConsentCookie(value: ConsentValue) {
   document.cookie =
     `${ANALYTICS_CONSENT_COOKIE}=${value}; Path=/; ` +
     `Max-Age=${ANALYTICS_CONSENT_MAX_AGE_SECONDS}; SameSite=Lax${secure}`;
+}
+
+function hasCookie(name: string): boolean {
+  if (typeof document === 'undefined') {
+    return false;
+  }
+  return document.cookie
+    .split(';')
+    .some((part) => part.trim().startsWith(`${name}=`));
 }
 
 function mayTrack(eventName: AnalyticsEventName): boolean {
@@ -105,6 +124,100 @@ export function setAnalyticsConsent(granted: boolean) {
     window.zaraz?.set?.('consent', { analytics: granted, ads: granted });
   } catch {
     // no-op
+  }
+}
+
+/**
+ * Copies the current Zaraz consent state into the `analytics-consent` cookie.
+ *
+ * Deliberately does NOT call `setAnalyticsConsent`: that writes back into
+ * Zaraz via `consent.setAll`, and this runs from Zaraz's own change event.
+ * Only the cookie is written here.
+ *
+ * Tries to identify the "Analytics" purpose by name and mirror only that value
+ * into the cookie, so other granted purposes don't accidentally enable
+ * analytics tracking. Falls back to "any granted purpose" if purpose metadata
+ * is unavailable.
+ */
+function syncConsentFromZaraz() {
+  const getAll = window.zaraz?.consent?.getAll;
+  if (typeof getAll !== 'function') {
+    return;
+  }
+
+  try {
+    const all = getAll();
+    const consent = window.zaraz?.consent as
+      | { purposes?: Record<string, { id?: string; name?: unknown }> }
+      | undefined;
+    const purposes = consent?.purposes;
+
+    const analyticsPurposeId = purposes
+      ? Object.values(purposes).find((p) => {
+          const name = p?.name;
+          if (typeof name === 'string') return name === 'Analytics';
+          if (name && typeof name === 'object') {
+            return Object.values(name as Record<string, unknown>).includes(
+              'Analytics',
+            );
+          }
+          return false;
+        })?.id
+      : undefined;
+
+    const granted = analyticsPurposeId
+      ? Boolean(all[analyticsPurposeId])
+      : Object.values(all).some(Boolean);
+
+    writeConsentCookie(granted ? 'granted' : 'denied');
+  } catch {
+    // no-op
+  }
+}
+
+/**
+ * Backfills the cookie for a visitor who answered the modal before this bridge
+ * shipped, or in a session where the cookie was cleared.
+ *
+ * Guarded on Zaraz having a recorded choice. Without that guard a first-time
+ * visitor who has not answered yet would be written as 'denied', erasing the
+ * distinction between "declined" and "not asked" that `readAnalyticsConsent`
+ * exposes for a future banner.
+ */
+function reconcileExistingConsent() {
+  if (readConsentCookie() !== null) {
+    return;
+  }
+  if (!hasCookie(ZARAZ_CONSENT_COOKIE)) {
+    return;
+  }
+  syncConsentFromZaraz();
+}
+
+/**
+ * Bridges the Zaraz consent modal to the server-side fallback.
+ *
+ * Zaraz gates only the tools it loads itself. `functions/api/analytics/event.ts`
+ * reaches GA4 through the Measurement Protocol, outside Zaraz entirely, and can
+ * only see the `analytics-consent` cookie. Without this bridge a visitor could
+ * decline in the modal and still have fallback events delivered.
+ *
+ * Safe to call before Zaraz has loaded, and a no-op if it never does.
+ */
+export function initAnalyticsConsentBridge() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  // Fired every time the visitor changes their preferences.
+  document.addEventListener('zarazConsentChoicesUpdated', syncConsentFromZaraz);
+
+  // The Consent API loads asynchronously and its ready event may already have
+  // fired by the time this runs, so check the flag as well as listening.
+  if (window.zaraz?.consent?.APIReady) {
+    reconcileExistingConsent();
+  } else {
+    document.addEventListener('zarazConsentAPIReady', reconcileExistingConsent);
   }
 }
 

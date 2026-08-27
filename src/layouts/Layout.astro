@@ -218,5 +218,20 @@ function safeJsonLd(data: object): string {
   </head>
   <body>
     <slot />
+
+    <!--
+      Keeps the `analytics-consent` cookie in step with the Zaraz consent
+      modal, so the Measurement Protocol fallback in
+      functions/api/analytics/event.ts honours the same choice. Zaraz only
+      gates the tools it loads itself, and cannot see that endpoint.
+
+      Bundled and deferred by Astro; it attaches listeners rather than reading
+      consent at parse time, so execution order relative to Zaraz is safe.
+    -->
+    <script>
+      import { initAnalyticsConsentBridge } from '../lib/analytics-client';
+
+      initAnalyticsConsentBridge();
+    </script>
   </body>
 </html>
