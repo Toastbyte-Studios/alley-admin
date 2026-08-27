@@ -7,6 +7,9 @@ const version: string = pkg.version;
 
 <footer class="footer">
   <div class="footer-content">
+    <nav class="footer-nav" aria-label="Footer">
+      <a href="/privacy">Privacy Policy</a>
+    </nav>
     <p class="footer-line">
       &copy; {dateYear} Alley Admin • Crafted with care for bowling enthusiasts •
       A product of <a
@@ -50,6 +53,11 @@ const version: string = pkg.version;
     max-width: var(--content-width);
     margin: 0 auto;
     text-align: center;
+  }
+
+  .footer-nav {
+    margin-bottom: 0.5rem;
+    font-size: 0.8125rem;
   }
 
   .footer-line {

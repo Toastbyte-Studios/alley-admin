@@ -1,0 +1,321 @@
+---
+import Background from '../components/Background.astro';
+import Footer from '../components/Footer.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Layout from '../layouts/Layout.astro';
+
+/**
+ * Privacy policy for alleyadmin.app.
+ *
+ * MAINTENANCE: every factual claim on this page was written against what the
+ * site and Worker actually do. If you change any of the following, re-read
+ * this file and update it in the same PR:
+ *
+ *   src/lib/analytics-events.ts        which events are sent
+ *   src/lib/analytics-client.ts        how events reach GA4, and the consent gate
+ *   functions/api/analytics/event.ts   the fallback path and its derived identifier
+ *   worker/src/index.ts                what the signup endpoint accepts and stores
+ *   worker/schema.sql                  the columns described under "The waitlist"
+ *   src/components/ThemeToggle.astro   the localStorage key named below
+ *
+ * The Zaraz cookie names and lifetimes come from the Cloudflare dashboard
+ * (Zaraz > Google Analytics 4 > Cookies), not from this repository. Re-check
+ * them there if the tool configuration changes.
+ *
+ * A privacy policy that has drifted from the code is worse than no policy.
+ */
+
+const lastUpdated = 'August 2026';
+---
+
+<Layout
+  title="Privacy Policy | Alley Admin"
+  description="What Alley Admin collects, why, and how to have it removed. Plain English, no legalese."
+>
+  <div class="page">
+    <Background />
+    <SiteHeader />
+
+    <main class="content">
+      <article class="prose">
+        <h1>Privacy Policy</h1>
+        <p class="last-updated">Last updated: {lastUpdated}</p>
+
+        <p>
+          Alley Admin is a product of Toastbyte Studios. This page covers the
+          website at alleyadmin.app. The league management application itself is
+          still in development — when it launches with accounts and league data,
+          this policy will be replaced with one that covers it properly.
+        </p>
+        <p>
+          For now the site does two things: it counts how the page is used, and
+          it stores an email address if you choose to give us one. That is the
+          whole of it, and the rest of this page is the detail.
+        </p>
+
+        <h2>Analytics</h2>
+        <p>
+          We use Google Analytics 4 to understand how the site is used. It is
+          loaded through Cloudflare Zaraz, which serves the analytics script
+          from alleyadmin.app rather than from a third-party domain and sends
+          the data on from Cloudflare's edge.
+        </p>
+        <p>We send a page view, plus these five events and nothing else:</p>
+        <ul>
+          <li>
+            <strong>waitlist_signup_started</strong> — you submitted the
+            waitlist form.
+          </li>
+          <li>
+            <strong>waitlist_signup_succeeded</strong> — the address was
+            accepted.
+          </li>
+          <li>
+            <strong>waitlist_signup_failed</strong> — it was not, along with a
+            reason such as "invalid_email" or "server_error".
+          </li>
+          <li>
+            <strong>outbound_link_clicked</strong> — you followed a link away
+            from the site, along with where it pointed.
+          </li>
+          <li>
+            <strong>theme_toggled</strong> — you switched between the light and
+            dark themes.
+          </li>
+        </ul>
+        <p>
+          <strong>Your email address is never sent to Google Analytics</strong>,
+          in any form, hashed or otherwise. The signup events record that a
+          signup happened and whether it worked, never who it was for.
+        </p>
+
+        <h2>Cookies</h2>
+        <p>Zaraz sets two first-party cookies on alleyadmin.app:</p>
+        <ul>
+          <li>
+            <strong>cfz_google-analytics_v4</strong> — the identifier and
+            engagement state kept for Google Analytics. Up to one year.
+          </li>
+          <li>
+            <strong>cfzs_google-analytics_v4</strong> — state for your current
+            visit, such as a page view count. Deleted when you close your
+            browser.
+          </li>
+        </ul>
+        <p>
+          Both are set for alleyadmin.app alone and do not follow you to other
+          sites. We also use Cloudflare Web Analytics, which counts page loads,
+          sets no cookies, and keeps no client-side state.
+        </p>
+        <p>
+          Your light/dark preference is stored in your browser under
+          <strong>aa-theme</strong>, and is only written once you click the
+          toggle. It never leaves your device.
+        </p>
+
+        <h2>When analytics does not load</h2>
+        <p>
+          If Zaraz fails to load in your browser — a blocked script, a slow
+          connection — the site falls back to sending the same events from our
+          own server instead. Because there is no cookie to read in that case,
+          the server derives a temporary identifier by hashing your IP address,
+          browser user agent, and language setting together. It is not stored,
+          and it is not linked to anything else.
+        </p>
+        <p>
+          This is a fallback and should be rare. We would rather tell you it
+          exists than leave it undocumented.
+        </p>
+
+        <h2>Opting out</h2>
+        <p>
+          There is no in-product opt-out yet. A consent banner is planned and
+          the underlying machinery is already in place, but it is not switched
+          on, so analytics currently runs for everyone who visits.
+        </p>
+        <p>
+          Until it ships, you can block analytics with a browser extension or
+          your browser's tracking protection, and clearing the cookies listed
+          above resets the identifier Google Analytics uses for you.
+        </p>
+
+        <h2>The waitlist</h2>
+        <p>
+          If you enter your email address, we store it in a Cloudflare D1
+          database. We keep <strong
+            >the address and the time you submitted it</strong
+          >, and nothing else — no name, no IP address, no browser details.
+        </p>
+        <p>
+          Submitting the same address twice is silently ignored rather than
+          stored again. We use the address only to tell you when Alley Admin
+          launches. We do not sell it, share it, or add it to any other list.
+        </p>
+
+        <h2>Hosting</h2>
+        <p>
+          Like any website, this one is delivered by a host — Cloudflare — which
+          processes the IP address and request details of every request in order
+          to serve the site and to block abuse. That happens for every visitor
+          and is separate from the analytics above.
+        </p>
+
+        <h2>Who else sees this</h2>
+        <p>
+          We do not sell, trade, or rent your information. Cloudflare provides
+          our hosting, our database, Web Analytics, and Zaraz. Google receives
+          the analytics events described above; how Google uses data from sites
+          like ours is explained at <a
+            href="https://policies.google.com/technologies/partner-sites"
+            target="_blank"
+            rel="noopener noreferrer"
+            >policies.google.com/technologies/partner-sites</a
+          >.
+        </p>
+
+        <h2>How long we keep it</h2>
+        <p>
+          Your email address stays until you ask us to remove it, or until Alley
+          Admin has launched and we no longer need it. Analytics data is kept by
+          Google according to the retention setting on our property, and
+          Cloudflare keeps its own logs according to its policies. Neither is
+          linked to your email address.
+        </p>
+
+        <h2>Getting your data removed</h2>
+        <p>
+          There is no account to delete. If you gave us an email address, email
+          <a href="mailto:info@toastbyte.studio">info@toastbyte.studio</a> and we
+          will remove it. You can also ask what we hold or ask us to correct it.
+        </p>
+        <p>
+          One honest limitation: analytics data is not linked to your email
+          address or to any account, so we cannot look up which analytics events
+          were yours in order to delete them.
+        </p>
+
+        <h2>Children</h2>
+        <p>
+          This site is not directed at children under 13 and we do not knowingly
+          collect their information. If you believe a child has given us an
+          email address, contact us and we will delete it.
+        </p>
+
+        <h2>Changes</h2>
+        <p>
+          We will update this page when what we collect changes, and update the
+          date at the top when we do.
+        </p>
+
+        <h2>Contact</h2>
+        <p>
+          Questions about any of this go to <a
+            href="mailto:info@toastbyte.studio">info@toastbyte.studio</a
+          >.
+        </p>
+      </article>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: linear-gradient(
+      180deg,
+      var(--color-bg) 0%,
+      var(--color-bg-sunken) 100%
+    );
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: var(--space-xl) var(--space-md) var(--space-2xl);
+    flex: 1;
+  }
+
+  /* Narrower than the landing page: this is a wall of text, and a measure of
+     roughly 70 characters is where it stays readable. */
+  .prose {
+    max-width: 70ch;
+    margin: 0 auto;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .prose h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 800;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    margin: 0 0 0.375rem;
+  }
+
+  .prose h2 {
+    font-family: var(--font-display);
+    font-size: 1.1875rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+    margin: var(--space-lg) 0 0.5rem;
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .last-updated {
+    color: var(--color-text-subtle);
+    font-size: 0.8125rem;
+    margin: 0 0 var(--space-md);
+  }
+
+  .prose p {
+    margin: 0 0 var(--space-sm);
+    text-wrap: pretty;
+  }
+
+  .prose ul {
+    margin: 0 0 var(--space-sm);
+    padding-left: 1.25rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.375rem;
+  }
+
+  .prose strong {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+
+  .prose a {
+    color: var(--color-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition:
+      color 0.2s var(--ease),
+      border-color 0.2s var(--ease);
+  }
+
+  .prose a:hover {
+    color: var(--color-primary-hover);
+    border-bottom-color: currentColor;
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      padding: var(--space-lg) var(--space-sm) var(--space-xl);
+    }
+  }
+</style>
