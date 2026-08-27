@@ -129,7 +129,12 @@ function readConsent(request: Request): string | null {
     .map((part) => part.trim())
     .find((part) => part.startsWith(prefix));
   if (!entry) return null;
-  const value = decodeURIComponent(entry.slice(prefix.length));
+  let value: string;
+  try {
+    value = decodeURIComponent(entry.slice(prefix.length));
+  } catch {
+    return null;
+  }
   return value === 'granted' || value === 'denied' ? value : null;
 }
 

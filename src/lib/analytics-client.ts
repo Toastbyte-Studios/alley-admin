@@ -41,9 +41,15 @@ function readConsentCookie(): ConsentValue | null {
     .map((part) => part.trim())
     .find((part) => part.startsWith(prefix));
 
-  return entry
-    ? parseConsentValue(decodeURIComponent(entry.slice(prefix.length)))
-    : null;
+  if (!entry) {
+    return null;
+  }
+
+  try {
+    return parseConsentValue(decodeURIComponent(entry.slice(prefix.length)));
+  } catch {
+    return null;
+  }
 }
 
 function writeConsentCookie(value: ConsentValue) {
