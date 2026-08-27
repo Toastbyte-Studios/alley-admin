@@ -147,13 +147,14 @@ function syncConsentFromZaraz() {
 
   try {
     const all = getAll();
-    const purposes = (window.zaraz?.consent as any)?.purposes as
-      | Record<string, { id?: string; name?: unknown }>
+    const consent = window.zaraz?.consent as
+      | { purposes?: Record<string, { id?: string; name?: unknown }> }
       | undefined;
+    const purposes = consent?.purposes;
 
     const analyticsPurposeId = purposes
       ? Object.values(purposes).find((p) => {
-          const name = (p as any)?.name;
+          const name = p?.name;
           if (typeof name === 'string') return name === 'Analytics';
           if (name && typeof name === 'object') {
             return Object.values(name as Record<string, unknown>).includes(
