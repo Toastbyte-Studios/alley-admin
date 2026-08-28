@@ -43,6 +43,5 @@ jobs:
           else
             gh release create "${{ steps.version.outputs.version }}" \
               --title "${{ steps.version.outputs.version }}" \
-              --draft \
               --generate-notes
           fi
