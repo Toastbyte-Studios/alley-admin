@@ -34,7 +34,7 @@ jobs:
             git push origin "${{ steps.version.outputs.version }}"
           fi
 
-      - name: Draft GitHub release
+      - name: GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
