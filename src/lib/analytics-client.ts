@@ -133,9 +133,8 @@ export function setAnalyticsConsent(granted: boolean) {
   // this it would keep sending to GA4 regardless of the cookie above.
   //
   // The banner only asks about analytics, so only the Analytics purpose is
-  // set when it can be found; `setAll` is the fallback for a zone whose
-  // purpose list can't be read. Ads are never granted from here: there's
-  // nothing to ask about them, and no ad tools.
+  // set when it can be found. If it cannot be set, only fall back to revoking
+  // all purposes; accepting must not grant purposes the banner did not ask about.
   try {
     const consent = window.zaraz?.consent;
     const purposeId = findAnalyticsPurposeId(
@@ -143,8 +142,8 @@ export function setAnalyticsConsent(granted: boolean) {
     );
     if (purposeId && typeof consent?.set === 'function') {
       consent.set({ [purposeId]: granted });
-    } else {
-      consent?.setAll?.(granted);
+    } else if (!granted) {
+      consent?.setAll?.(false);
     }
     window.zaraz?.set?.('consent', { analytics: granted, ads: false });
   } catch {
@@ -161,8 +160,8 @@ export function setAnalyticsConsent(granted: boolean) {
  *
  * Tries to identify the "Analytics" purpose by name and mirror only that value
  * into the cookie, so other granted purposes don't accidentally enable
- * analytics tracking. Falls back to "any granted purpose" if purpose metadata
- * is unavailable.
+ * analytics tracking. Fails closed when the Analytics purpose cannot be
+ * identified.
  */
 function syncConsentFromZaraz() {
   const getAll = window.zaraz?.consent?.getAll;
@@ -177,8 +176,8 @@ function syncConsentFromZaraz() {
     );
 
     const granted = analyticsPurposeId
-      ? Boolean(all[analyticsPurposeId])
-      : Object.values(all).some(Boolean);
+      ? all[analyticsPurposeId] === true
+      : false;
 
     writeConsentCookie(granted ? 'granted' : 'denied');
   } catch {
