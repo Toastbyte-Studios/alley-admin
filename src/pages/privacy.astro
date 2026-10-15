@@ -17,15 +17,17 @@ import Layout from '../layouts/Layout.astro';
  *   worker/src/index.ts                what the signup endpoint accepts and stores
  *   worker/schema.sql                  the columns described under "The waitlist"
  *   src/components/ThemeToggle.astro   the localStorage key named below
+ *   src/components/ConsentBanner.astro the consent banner and what it stores
  *
  * The Zaraz cookie names and lifetimes come from the Cloudflare dashboard
  * (Zaraz > Google Analytics 4 > Cookies), not from this repository. Re-check
- * them there if the tool configuration changes.
+ * them there if the tool configuration changes. `zaraz-consent` and
+ * `_zaraz_consent` were checked on the live site in October 2026.
  *
  * A privacy policy that has drifted from the code is worse than no policy.
  */
 
-const lastUpdated = 'August 2026';
+const lastUpdated = 'October 2026';
 ---
 
 <Layout
@@ -48,17 +50,23 @@ const lastUpdated = 'August 2026';
           this policy will be replaced with one that covers it properly.
         </p>
         <p>
-          For now the site does two things: it counts how the page is used, and
-          it stores an email address if you choose to give us one. That is the
-          whole of it, and the rest of this page is the detail.
+          For now the site does two things: it counts how the page is used, with
+          Google Analytics only if you say yes, and it stores an email address
+          if you choose to give us one. That is the whole of it, and the rest of
+          this page is the detail.
         </p>
 
         <h2>Analytics</h2>
         <p>
-          We use Google Analytics 4 to understand how the site is used. It is
-          loaded through Cloudflare Zaraz, which serves the analytics script
-          from alleyadmin.app rather than from a third-party domain and sends
-          the data on from Cloudflare's edge.
+          The first time you visit, we ask whether we may use analytics. Until
+          you answer, and if you say no, none of the Google Analytics described
+          here happens.
+        </p>
+        <p>
+          If you say yes, we use Google Analytics 4 to understand how the site
+          is used. It is loaded through Cloudflare Zaraz, which serves the
+          analytics script from alleyadmin.app rather than from a third-party
+          domain and sends the data on from Cloudflare's edge.
         </p>
         <p>We send a page view, plus these five events and nothing else:</p>
         <ul>
@@ -88,8 +96,27 @@ const lastUpdated = 'August 2026';
           signup happened and whether it worked, never who it was for.
         </p>
 
-        <h2>Cookies</h2>
-        <p>Zaraz sets two first-party cookies on alleyadmin.app:</p>
+        <h2>Cookies and browser storage</h2>
+        <p>
+          Once you answer the analytics question, we remember your answer so we
+          don't ask on every page:
+        </p>
+        <ul>
+          <li>
+            <strong>analytics-consent</strong> — a cookie holding "granted" or "denied"
+            and nothing else. One year.
+          </li>
+          <li>
+            <strong>zaraz-consent</strong> — a cookie with Cloudflare Zaraz's own
+            record of the same answer, which it checks before loading analytics.
+          </li>
+          <li>
+            <strong>_zaraz_consent</strong> — another copy Zaraz keeps in your browser's
+            local storage, as yes or no for analytics and for ads. We don't run ads,
+            so the ads value is always no.
+          </li>
+        </ul>
+        <p>If you say yes, Zaraz also sets two cookies for Google Analytics:</p>
         <ul>
           <li>
             <strong>cfz_google-analytics_v4</strong> — the identifier and engagement
@@ -101,9 +128,10 @@ const lastUpdated = 'August 2026';
           </li>
         </ul>
         <p>
-          Both are set for alleyadmin.app alone and do not follow you to other
-          sites. We also use Cloudflare Web Analytics, which counts page loads,
-          sets no cookies, and keeps no client-side state.
+          All of these are set for alleyadmin.app alone and do not follow you to
+          other sites. We also use Cloudflare Web Analytics, which runs for
+          every visitor whatever you answer: it counts page loads and measures
+          how fast they are, sets no cookies, and keeps no client-side state.
         </p>
         <p>
           Your light/dark preference is stored in your browser under
@@ -115,26 +143,25 @@ const lastUpdated = 'August 2026';
         <p>
           If Zaraz fails to load in your browser — a blocked script, a slow
           connection — the site falls back to sending the same events from our
-          own server instead. Because there is no cookie to read in that case,
-          the server derives a temporary identifier by hashing your IP address,
-          browser user agent, and language setting together. It is not stored,
-          and it is not linked to anything else.
+          own server instead, and only if you said yes. Because there is no
+          analytics cookie to read in that case, the server derives an
+          identifier by hashing your IP address, browser user agent, and
+          language setting together. We don't store it ourselves, but Google
+          receives and keeps it with the analytics data. It is not linked to
+          your email address.
         </p>
         <p>
           This is a fallback and should be rare. We would rather tell you it
           exists than leave it undocumented.
         </p>
 
-        <h2>Opting out</h2>
+        <h2>Changing your answer</h2>
         <p>
-          There is no in-product opt-out yet. A consent banner is planned and
-          the underlying machinery is already in place, but it is not switched
-          on, so analytics currently runs for everyone who visits.
-        </p>
-        <p>
-          Until it ships, you can block analytics with a browser extension or
-          your browser's tracking protection, and clearing the cookies listed
-          above resets the identifier Google Analytics uses for you.
+          You can change your answer at any time with <strong
+            >Cookie settings</strong
+          > at the bottom of every page. Saying no stops any more analytics being
+          sent. Clearing this site's cookies resets the identifier Google Analytics
+          uses for you, and you will be asked again on your next visit.
         </p>
 
         <h2>The waitlist</h2>
@@ -162,8 +189,8 @@ const lastUpdated = 'August 2026';
         <p>
           We do not sell, trade, or rent your information. Cloudflare provides
           our hosting, our database, Web Analytics, and Zaraz. Google receives
-          the analytics events described above; how Google uses data from sites
-          like ours is explained at <a
+          the analytics events described above, if you said yes; how Google uses
+          data from sites like ours is explained at <a
             href="https://policies.google.com/technologies/partner-sites"
             target="_blank"
             rel="noopener noreferrer"
