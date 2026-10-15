@@ -2,6 +2,7 @@ import {
   ANALYTICS_CONSENT_COOKIE,
   ANALYTICS_CONSENT_MAX_AGE_SECONDS,
   CONSENT_EXEMPT_EVENTS,
+  findAnalyticsPurposeId,
   isAnalyticsConsentRequired,
   parseConsentValue,
   type ConsentState,
@@ -20,6 +21,7 @@ declare global {
       track?: (eventName: string, params?: Record<string, unknown>) => void;
       consent?: {
         APIReady?: boolean;
+        set?: (preferences: Record<string, boolean>) => void;
         setAll?: (value: boolean) => void;
         getAll?: () => Record<string, boolean>;
         // Delivers Pageview events Zaraz withheld while consent was absent.
@@ -129,9 +131,22 @@ export function setAnalyticsConsent(granted: boolean) {
 
   // Zaraz maintains its own consent state for the tools it loads. Without
   // this it would keep sending to GA4 regardless of the cookie above.
+  //
+  // The banner only asks about analytics, so only the Analytics purpose is
+  // set when it can be found; `setAll` is the fallback for a zone whose
+  // purpose list can't be read. Ads are never granted from here: there's
+  // nothing to ask about them, and no ad tools.
   try {
-    window.zaraz?.consent?.setAll?.(granted);
-    window.zaraz?.set?.('consent', { analytics: granted, ads: granted });
+    const consent = window.zaraz?.consent;
+    const purposeId = findAnalyticsPurposeId(
+      (consent as { purposes?: unknown } | undefined)?.purposes,
+    );
+    if (purposeId && typeof consent?.set === 'function') {
+      consent.set({ [purposeId]: granted });
+    } else {
+      consent?.setAll?.(granted);
+    }
+    window.zaraz?.set?.('consent', { analytics: granted, ads: false });
   } catch {
     // no-op
   }
@@ -141,7 +156,7 @@ export function setAnalyticsConsent(granted: boolean) {
  * Copies the current Zaraz consent state into the `analytics-consent` cookie.
  *
  * Deliberately does NOT call `setAnalyticsConsent`: that writes back into
- * Zaraz via `consent.setAll`, and this runs from Zaraz's own change event.
+ * Zaraz, and this runs from Zaraz's own change event.
  * Only the cookie is written here.
  *
  * Tries to identify the "Analytics" purpose by name and mirror only that value
@@ -157,23 +172,9 @@ function syncConsentFromZaraz() {
 
   try {
     const all = getAll();
-    const consent = window.zaraz?.consent as
-      | { purposes?: Record<string, { id?: string; name?: unknown }> }
-      | undefined;
-    const purposes = consent?.purposes;
-
-    const analyticsPurposeId = purposes
-      ? Object.values(purposes).find((p) => {
-          const name = p?.name;
-          if (typeof name === 'string') return name === 'Analytics';
-          if (name && typeof name === 'object') {
-            return Object.values(name as Record<string, unknown>).includes(
-              'Analytics',
-            );
-          }
-          return false;
-        })?.id
-      : undefined;
+    const analyticsPurposeId = findAnalyticsPurposeId(
+      (window.zaraz?.consent as { purposes?: unknown } | undefined)?.purposes,
+    );
 
     const granted = analyticsPurposeId
       ? Boolean(all[analyticsPurposeId])

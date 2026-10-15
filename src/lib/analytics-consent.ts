@@ -50,6 +50,40 @@ export function parseConsentValue(
   return raw === 'granted' || raw === 'denied' ? raw : null;
 }
 
+/** The Zaraz purpose that gates GA4. Must match the name in the dashboard. */
+export const ANALYTICS_PURPOSE_NAME = 'Analytics';
+
+/**
+ * Finds the id of the Analytics purpose in `zaraz.consent.purposes`.
+ *
+ * Zaraz keys that object by purpose id, and the entries themselves carry no
+ * `id` field. Seen on alleyadmin.app:
+ *
+ *   { zACO: { name: { en: 'Analytics' }, description: {...}, order: 0 } }
+ *
+ * `name` is a per-language map there, but a plain string is accepted too.
+ * Returns `undefined` when there's no such purpose.
+ */
+export function findAnalyticsPurposeId(purposes: unknown): string | undefined {
+  if (typeof purposes !== 'object' || purposes === null) {
+    return undefined;
+  }
+
+  for (const [id, purpose] of Object.entries(purposes)) {
+    const name = (purpose as { name?: unknown } | null)?.name;
+    const names =
+      typeof name === 'string'
+        ? [name]
+        : name && typeof name === 'object'
+          ? Object.values(name)
+          : [];
+    if (names.includes(ANALYTICS_PURPOSE_NAME)) {
+      return id;
+    }
+  }
+  return undefined;
+}
+
 /**
  * Events delivered even when consent is absent or denied.
  *

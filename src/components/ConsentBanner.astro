@@ -166,8 +166,8 @@
     };
 
     const choose = (granted: boolean) => {
-      // Writes the `analytics-consent` cookie and calls
-      // `zaraz.consent.setAll`, so the Zaraz tools and the Pages Function
+      // Writes the `analytics-consent` cookie and records the answer on the
+      // Zaraz Analytics purpose, so the Zaraz tools and the Pages Function
       // fallback both act on the same decision.
       setAnalyticsConsent(granted);
 
