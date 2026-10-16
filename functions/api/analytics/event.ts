@@ -8,9 +8,10 @@
  * wrong with the Zaraz configuration for the zone.
  *
  * Pages Functions are bundled separately from the Astro build and cannot
- * import from `src/`, so the event allowlist and the consent cookie name are
- * duplicated here. Keep them in sync with src/lib/analytics-events.ts and
- * src/lib/analytics-consent.ts.
+ * import from `src/`, so the event and parameter allowlists and the consent
+ * cookie name are duplicated here. Keep them in sync with
+ * src/lib/analytics-events.ts and src/lib/analytics-consent.ts;
+ * test/analytics-relay.test.ts fails if they drift.
  *
  * The Cloudflare `PagesFunction` helper type is deliberately not used: it
  * would pull in `@cloudflare/workers-types`, and everything this handler
@@ -31,13 +32,78 @@ interface RequestContext {
 
 const GA4_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
 
-const ALLOWED_EVENTS = new Set([
+export const ALLOWED_EVENTS = new Set([
   'waitlist_signup_started',
   'waitlist_signup_succeeded',
   'waitlist_signup_failed',
   'outbound_link_clicked',
   'theme_toggled',
 ]);
+
+/** Mirrors ANALYTICS_OUTBOUND_DESTINATIONS in src/lib/analytics-events.ts. */
+export const OUTBOUND_DESTINATIONS = new Set(['toastbyte-studio']);
+
+/**
+ * Mirrors the failure reasons CTASection.astro sends, plus `http_<status>`
+ * for any other non-OK response. A three-digit status carries nothing about
+ * the visitor.
+ */
+const FAILURE_REASONS = new Set([
+  'invalid_email',
+  'server_error',
+  'network_error',
+]);
+const HTTP_STATUS_REASON = /^http_[1-5]\d\d$/;
+
+const THEMES = new Set(['light', 'dark']);
+
+/**
+ * Keeps only the parameters each event is known to carry, and only values
+ * from a known set. Returns `null` when a required parameter is missing or
+ * unknown, and the caller drops the event.
+ *
+ * An allowlist rather than a type filter: the relay holds an API secret, and
+ * forwarding whatever a caller sends would let anyone write arbitrary
+ * strings, an email address included, into our GA4 property.
+ */
+export function sanitizeParams(
+  eventName: string,
+  raw: unknown,
+): Record<string, string> | null {
+  const input =
+    typeof raw === 'object' && raw !== null && !Array.isArray(raw)
+      ? (raw as Record<string, unknown>)
+      : raw === undefined
+        ? {}
+        : null;
+  if (!input) return null;
+
+  switch (eventName) {
+    case 'waitlist_signup_started':
+    case 'waitlist_signup_succeeded':
+      return {};
+    case 'waitlist_signup_failed': {
+      const { reason } = input;
+      return typeof reason === 'string' &&
+        (FAILURE_REASONS.has(reason) || HTTP_STATUS_REASON.test(reason))
+        ? { reason }
+        : null;
+    }
+    case 'outbound_link_clicked': {
+      const { destination } = input;
+      return typeof destination === 'string' &&
+        OUTBOUND_DESTINATIONS.has(destination)
+        ? { destination }
+        : null;
+    }
+    case 'theme_toggled': {
+      const { theme } = input;
+      return typeof theme === 'string' && THEMES.has(theme) ? { theme } : null;
+    }
+    default:
+      return null;
+  }
+}
 
 const ANALYTICS_CONSENT_COOKIE = 'analytics-consent';
 
@@ -187,26 +253,17 @@ export const onRequestPost = async ({
     return json({ error: 'Invalid analytics event name.' }, 400);
   }
 
+  const params = sanitizeParams(body.eventName, body.params);
+  if (!params) {
+    return json({ error: 'Invalid analytics event params.' }, 400);
+  }
+
   const measurementId = env.ANALYTICS_GA4_MEASUREMENT_ID?.trim();
   const apiSecret = env.ANALYTICS_GA4_API_SECRET?.trim();
   if (!measurementId || !apiSecret) {
     // Not an error the caller can act on, and not worth surfacing as one.
     return json({ ok: true, delivered: false }, 200);
   }
-
-  // Drop anything that is not a primitive, and cap the count. GA4 rejects the
-  // whole payload for a malformed param rather than skipping it.
-  const params = Object.fromEntries(
-    Object.entries(body.params ?? {})
-      .filter(
-        ([, v]) =>
-          typeof v === 'string' ||
-          typeof v === 'number' ||
-          typeof v === 'boolean',
-      )
-      .map(([k, v]) => [k, typeof v === 'boolean' ? (v ? 1 : 0) : v])
-      .slice(0, 24),
-  );
 
   try {
     await fetch(
