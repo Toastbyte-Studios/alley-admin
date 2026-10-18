@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import {
   ALLOWED_EVENTS,
   OUTBOUND_DESTINATIONS,
@@ -13,7 +14,9 @@ import {
 } from '../src/lib/analytics-events.ts';
 
 /** Every .astro file under src/, for checking the markup against the lists. */
-function astroSources(dir = new URL('../src/', import.meta.url).pathname) {
+function astroSources(
+  dir = fileURLToPath(new URL('../src/', import.meta.url)),
+) {
   const out: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);

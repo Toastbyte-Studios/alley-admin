@@ -16,7 +16,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "astro sync && tsc --noEmit",
-    "test": "node --test 'test/**/*.test.ts'",
+    "test": "node --experimental-strip-types --test 'test/**/*.test.ts'",
     "cleanup": "npm run format && npm run lint && npm run type-check && npm test"
   },
   "dependencies": {
