@@ -1,7 +1,7 @@
 {
   "name": "alley-admin",
   "type": "module",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "engines": {
     "node": ">=22.13.0"
   },
@@ -16,7 +16,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "astro sync && tsc --noEmit",
-    "cleanup": "npm run format && npm run lint && npm run type-check"
+    "test": "node --experimental-strip-types --test 'test/**/*.test.ts'",
+    "cleanup": "npm run format && npm run lint && npm run type-check && npm test"
   },
   "dependencies": {
     "astro": "^7.2.8"
