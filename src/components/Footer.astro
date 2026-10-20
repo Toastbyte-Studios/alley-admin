@@ -50,8 +50,9 @@ const version: string = pkg.version;
 
     link.addEventListener('click', () => {
       trackClientEvent(ANALYTICS_EVENTS.outboundLinkClicked, {
+        // The destination name alone: it is one of
+        // ANALYTICS_OUTBOUND_DESTINATIONS, which the relay also checks.
         destination: link.dataset.outbound ?? 'unknown',
-        href: link.href,
       });
     });
   }

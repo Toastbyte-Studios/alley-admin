@@ -51,3 +51,10 @@ export const ANALYTICS_EVENTS = {
 
 export type AnalyticsEventName =
   (typeof ANALYTICS_EVENTS)[keyof typeof ANALYTICS_EVENTS];
+
+/**
+ * Every `data-outbound` value on the site. The relay
+ * (functions/api/analytics/event.ts) forwards `destination` only when it is
+ * one of these, so add a new outbound link's name here and there.
+ */
+export const ANALYTICS_OUTBOUND_DESTINATIONS = ['toastbyte-studio'] as const;
